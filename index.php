@@ -1,10 +1,18 @@
+<?php
+
+require_once 'core/App.php';
+require_once 'core/Controller.php';
+
+$app = new App();
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>球魚氣象觀測站</title>
-  <script src="js/jquery.min.js"></script>
+  <script src="/RD1_Assignment/js/jquery.min.js"></script>
 </head>
 <body>
   選擇縣市：
@@ -225,7 +233,7 @@ $(document).ready(function() {
       type: 'GET',
     })
     .done(function(data) {
-      console.log(data);
+      console.log(data)
       for(i in data){
         console.log(i);
       }
@@ -238,7 +246,7 @@ $(document).ready(function() {
       type: 'GET',
     })
     .done(function(data) {
-      // console.log(data);
+      console.log(data);
     })
 
     // 獲取未來一週的天氣預報
@@ -247,7 +255,7 @@ $(document).ready(function() {
       type: 'GET',
     })
     .done(function(data) {
-      // console.log(data);
+      console.log(data);
     })
   })
 });
