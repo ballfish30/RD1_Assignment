@@ -6,5 +6,5 @@
 	$dbname = 'weather';
 
   $link = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname, 8889);
-  // var_dump($link);
+  return $link;
 ?>

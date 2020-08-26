@@ -50,6 +50,7 @@ $app = new App();
 $(document).ready(function() {
   var dt = new Date();
   var $weatherNow = weatherNow.innerHTML;
+  
   var data = {
     '基隆市': {
       '基隆 (KEELUNG)': '466940', '彭佳嶼 (PENGJIAYU)': '466950', '七堵 (Qidu)': 'C0B010', '基隆嶼 (Keelung Islet)': 'C0B020'
@@ -233,10 +234,6 @@ $(document).ready(function() {
       type: 'GET',
     })
     .done(function(data) {
-      console.log(data)
-      for(i in data){
-        console.log(i);
-      }
       weatherNow.innerHTML = $weatherNow + data['records']['location'][0]['weatherElement'][0]['time'][0]['parameter']['parameterName'];
     })
 
@@ -246,7 +243,7 @@ $(document).ready(function() {
       type: 'GET',
     })
     .done(function(data) {
-      console.log(data);
+      // console.log(data);
     })
 
     // 獲取未來一週的天氣預報
@@ -255,7 +252,7 @@ $(document).ready(function() {
       type: 'GET',
     })
     .done(function(data) {
-      console.log(data);
+      // console.log(data);
     })
   })
 });
