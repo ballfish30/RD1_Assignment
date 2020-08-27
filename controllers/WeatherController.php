@@ -201,7 +201,7 @@ class WeatherController extends Controller {
                 }
                 else{
                     $sql = <<<mutil
-                    upadte weather
+                    update weather
                     set
                         locationName = "$locationName",
                         lat = $lat,
@@ -227,6 +227,8 @@ class WeatherController extends Controller {
                         locationName = "$locationName" and startDatetime = "$startDatetime";
                     mutil;
                     mysqli_query($link, $sql);
+                    echo("$sql");
+                    echo('<br>');
                 }
             }
         }
@@ -265,7 +267,7 @@ class WeatherController extends Controller {
             }
             else{
                 $sql = <<<mutil
-                    upadte weather
+                    update rainfallNow
                     set
                         lat = $lat,
                         lon = $lon,
@@ -282,11 +284,41 @@ class WeatherController extends Controller {
     // 過去二十四小時累計雨量
     function rainfall24hr(){
         $data = json_decode(file_get_contents('https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization=CWB-50C0F9C6-79D6-4B30-B960-24D1B2964BAC&elementName=HOUR_24&parameterName=ATTRIBUTE'));
-        $lat = $value->lat;
-        $lon = $value->lon;
-        $locationName = $value->locationName;
-        $stationId = $value->stationId;
-        $elementValue = $value->weatherElement[0]->elementValue;
+        foreach($data->records->location as $value){
+            $lat = $value->lat;
+            $lon = $value->lon;
+            $locationName = $value->locationName;
+            $stationId = $value->stationId;
+            $elementValue = $value->weatherElement[0]->elementValue;
+            $sql = <<<mutil
+                select * from rainfallNow where stationId = "$stationId";
+                mutil;
+            $result = mysqli_query($link, $sql);
+            $search = mysqli_fetch_assoc($result);
+            if($search == NULL){
+                $sql = <<<mutil
+                insert into rainfallNow(
+                    lat, lon, locationName,
+                    stationId, elementValue
+                )values(
+                    $lat, $lon, "$locationName", "$stationId", $elementValue
+                );
+                mutil;
+                mysqli_query($link, $sql);
+            }
+            else{
+                $sql = <<<mutil
+                    update rainfall24hr
+                    set
+                        lat = $lat,
+                        lon = $lon,
+                        elementValue = $elementValue
+                    where
+                        stationId = '$stationId';
+                    mutil;
+                mysqli_query($link, $sql);
+            }
+        }
     }
     
 }
