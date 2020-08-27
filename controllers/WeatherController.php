@@ -4,7 +4,7 @@ require_once("config.php");
 class WeatherController extends Controller {
     
     function index() {
-        echo(123);
+        $this->view("Weather/index");
     }
     
 
@@ -17,8 +17,10 @@ class WeatherController extends Controller {
         while($switch){
             $switch = 1;
             $msg=date("Y-m-d H:i:s").$switch;
-            file_put_contents("log.log",$this->index(),FILE_APPEND);//記錄日誌
-            $this->index();
+            file_put_contents("log.log",$this->weatherData(),FILE_APPEND);//記錄日誌
+            $this->weatherData();
+            $this->rainfallNow();
+            $this->rainfall24hr();
             sleep($sleep_time);//等待時間，進行下一次操作。
         }
         exit();
@@ -185,6 +187,7 @@ class WeatherController extends Controller {
                 mutil;
                 $result = mysqli_query($link, $sql);
                 $search = mysqli_fetch_assoc($result);
+                //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
                 if($search == NULL){
                     $sql = <<<mutil
                     INSERT  into weather(
@@ -227,13 +230,11 @@ class WeatherController extends Controller {
                         locationName = "$locationName" and startDatetime = "$startDatetime";
                     mutil;
                     mysqli_query($link, $sql);
-                    echo("$sql");
-                    echo('<br>');
                 }
             }
         }
         
-        return ($data);
+        return ("已更新囉\n");
     }
 
 
@@ -254,6 +255,7 @@ class WeatherController extends Controller {
                 mutil;
             $result = mysqli_query($link, $sql);
             $search = mysqli_fetch_assoc($result);
+            //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
             if($search == NULL){
                 $sql = <<<mutil
                 insert into rainfallNow(
@@ -283,6 +285,7 @@ class WeatherController extends Controller {
 
     // 過去二十四小時累計雨量
     function rainfall24hr(){
+        $link = include 'config.php';
         $data = json_decode(file_get_contents('https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization=CWB-50C0F9C6-79D6-4B30-B960-24D1B2964BAC&elementName=HOUR_24&parameterName=ATTRIBUTE'));
         foreach($data->records->location as $value){
             $lat = $value->lat;
@@ -295,6 +298,7 @@ class WeatherController extends Controller {
                 mutil;
             $result = mysqli_query($link, $sql);
             $search = mysqli_fetch_assoc($result);
+            //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
             if($search == NULL){
                 $sql = <<<mutil
                 insert into rainfallNow(
@@ -320,7 +324,11 @@ class WeatherController extends Controller {
             }
         }
     }
+
+
+
+    function todayWeather(){
+        $this->view("Weather/todayWeather");
+    }
     
 }
-
-?>

@@ -10,6 +10,9 @@ class Controller {
         require_once "views/$view.php";
     }
 
+
+    
+
 }
 
 ?>
