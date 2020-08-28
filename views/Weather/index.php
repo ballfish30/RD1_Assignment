@@ -6,9 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>球魚氣象觀測站</title>
   <script src="/RD1_Assignment/js/jquery.min.js"></script>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+    }
+  </style>
 </head>
 
 <body>
+<div>
   選擇縣市：
   <select name="stationCounty" id="stationCounty" style="width: 220px;">
     <option value="">----------</option>
@@ -34,11 +40,15 @@
     <option value="澎湖縣">澎湖縣 (PenghuCounty)</option>
     <option value="金門縣">金門縣 (KinmenCounty)</option>
     <option value="連江縣">連江縣 (LienchiangCounty)</option>
-  </select><br>
-
-  <div id="weatherNow">目前天氣：</div>
-  <div id="weather2">未來2天天氣預報：</div>
-  <div id="weatherWeek">未來一週天氣預報：</div>
+  </select>
+</div>
+<br>
+<div id="location">
+</div>
+<br>
+<div id="weatherNow"></div>
+<div id="weather2"></div>
+<div id="weatherWeek"></div>
 </body>
 <script>
   $(document).ready(function() {
@@ -509,7 +519,6 @@
         '大津 (Dajin)': 'C1V340',
         '尖山 (Jianshan)': 'C1V390',
         '吉東 (JiaDong)': 'C1V570',
-        '': '',
         '溪南(特生中心) (Xinan)': 'C1V580',
         '新發 (Xinfa)': 'C1V590',
         '藤枝 (Tengzhi)': 'C1V600',
@@ -699,24 +708,75 @@
         '花嶼 (Huayu)': 'C0W130'
       },
     };
+
     $("#stationCounty").on("change", function() {
       $this = $(this);
-      // 獲取未來３６小時天氣預報
-      // $.ajax({
-      //   type:"GET",
-      //   url:"todayWeather.php"
-      // })
-      // .done(function (data) {
-      //   console.log(data); 
-      // })
-      $.get('http://localhost:8888/RD1_Assignment/weather/todayWeather', aaa);
-      function aaa(data){
-        console.log(data);
+      $select = '選擇觀測站：<select name="stationCounty" id="stationCounty" style="width: 220px;">';
+      $option = '';
+      for(i in location[$this.val()]){
+        $option += '<option value='+ location[i] +'>'+ i +'</option>'
       }
+      $select += $option;
+      $select += '</select>';
+      $('#location').html($select);
+      // 獲取今天天氣預報
+      $.ajax({
+        type:"GET",
+        url:"http://localhost:8888/RD1_Assignment/weather/todayWeather?locationName="+$this.val()
+      })
+      .done(function (data) {
+        $data = JSON.parse(data);
+        $html = '<table>\
+                  <tr>\
+                    <th>縣市</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
+                  </tr>\
+                  <tr>\
+                    <td>'+$data[0]['locationName']+'</td><td>'+$data[0]['pop']+'％</td><td>'+$data[0]['MinT']+'度-'+$data[0]['MaxT']+'度</td><td>'+$data[0]['weatherDescription']+'</td>\
+                  </tr>\
+                </table>'
+        $('#weatherNow').html("目前天氣：<br>"+$html)
+      })
 
+      // 獲取未來兩天天氣預報
+      $.ajax({
+        type:"GET",
+        url:"http://localhost:8888/RD1_Assignment/weather/tomorrowWeather?locationName="+$this.val()
+      })
+      .done(function (data) {
+        $data = JSON.parse(data);
+        $weather = '';
+        for(weather of $data){
+          $weather += '<tr><td>'+weather['locationName']+'</td><td>'+weather['pop']+'％</td><td>'+weather['MinT']+'度-'+weather['MaxT']+'度</td><td>'+weather['weatherDescription']+'</td></tr>'
+        }
+        $html = '<table>\
+                  <tr>\
+                    <th>縣市</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
+                  </tr>\
+                    '+$weather+'\
+                </table>'
+        $('#weather2').html("未來2天天氣預報：：<br>"+$html)
+      })
 
+      // 抓取未來一週天氣預報
+      $.ajax({
+        type:"GET",
+        url:"http://localhost:8888/RD1_Assignment/weather/weekWeather?locationName="+$this.val()
+      })
+      .done(function (data) {
+        $data = JSON.parse(data);
+        $weather = '';
+        for(weather of $data){
+          $weather += '<tr><td>'+weather['locationName']+'</td><td>'+weather['pop']+'％</td><td>'+weather['MinT']+'度-'+weather['MaxT']+'度</td><td>'+weather['weatherDescription']+'</td></tr>'
+        }
+        $html = '<table>\
+                  <tr>\
+                    <th>縣市</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
+                  </tr>\
+                    '+$weather+'\
+                </table>'
+        $('#weatherWeek').html("未來一週天氣預報：：<br>"+$html)
+      })
     })
   });
 </script>
-
 </html>

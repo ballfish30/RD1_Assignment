@@ -69,7 +69,7 @@ class WeatherController extends Controller
                         if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $pop = $weatherElement['time'][$j]['elementValue'][0]['value'];
                         } else {
-                            $pop = 'NULL';
+                            $pop = '0';
                         }
                     } elseif ($weatherElement['description'] == "平均溫度") {
                         if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
@@ -268,20 +268,21 @@ class WeatherController extends Controller
             $stationId = $value->stationId;
             $elementValue = $value->weatherElement[0]->elementValue;
             $sql = <<<mutil
-                select * from rainfallNow where stationId = "$stationId";
+                select * from rainfall24hr where stationId = "$stationId";
                 mutil;
             $result = mysqli_query($link, $sql);
             $search = mysqli_fetch_assoc($result);
             //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
             if ($search == NULL) {
                 $sql = <<<mutil
-                insert into rainfallNow(
+                insert into rainfall24hr(
                     lat, lon, locationName,
                     stationId, elementValue
                 )values(
                     $lat, $lon, "$locationName", "$stationId", $elementValue
                 );
                 mutil;
+                echo($sql);
                 mysqli_query($link, $sql);
             } else {
                 $sql = <<<mutil
@@ -293,6 +294,7 @@ class WeatherController extends Controller
                     where
                         stationId = '$stationId';
                     mutil;
+                echo($sql);
                 mysqli_query($link, $sql);
             }
         }
@@ -302,16 +304,61 @@ class WeatherController extends Controller
 
     function todayWeather()
     {
+        $locationName = $_GET['locationName'];
         $link = include 'config.php';
         $arr = array();
-        $news = <<<multi
-        select * from weather where (startDatetime > '2020-08-28 00:00:00' AND startDatetime < '2020-08-28 24:00:00');
-        multi;
+        $startTime = date("Y-m-d H:i:s", mktime(6, 00, 00, date('m'), date('d'), date('Y')));
+        $endTime = date("Y-m-d H:i:s", mktime(18, 00, 00, date('m'), date('d'), date('Y')));
+        $datetime = date("Y-m-d H:i:s", mktime(date('H') + 8, date('i'), date('s'), date('m'), date('d'), date('Y')));
+        if ($datetime >= date("Y-m-d H:i:s", mktime(6, 00, 00, date('m'), date('d'), date('Y'))) and $datetime < date("Y-m-d H:i:s", mktime(18, 00, 00, date('m'), date('d'), date('Y')))) {
+            $news = <<<multi
+            select * from weather where (startDatetime = '$startTime') and locationName = '$locationName';
+            multi;
+        }else{
+            $news = <<<multi
+            select * from weather where (startDatetime = '$endTime') and locationName = '$locationName';
+            multi;
+        }
         $result = mysqli_query($link, $news);
-        $row = mysqli_fetch_assoc($result);
         while ($row = $result->fetch_assoc()) {
             array_push($arr, $row);
         }
-        echo json_encode($arr,JSON_UNESCAPED_UNICODE);
+        echo json_encode($arr,JSON_UNESCAPED_UNICODE);//json編碼 
+    }
+
+
+
+    function tomorrowWeather(){
+        $locationName = $_GET['locationName'];
+        $link = include 'config.php';
+        $arr = array();
+        $today = date("Y/m/d");
+        $tomorrow = date('Y/m/d',strtotime('+2 day'));
+        $news = <<<multi
+        select * from weather where (DATE_FORMAT(startDatetime, "%Y/%m/%d") between '$today' and '$tomorrow') and locationName = '$locationName';
+        multi;
+        $result = mysqli_query($link, $news);
+        while ($row = $result->fetch_assoc()) {
+            array_push($arr, $row);
+        }
+        echo json_encode($arr,JSON_UNESCAPED_UNICODE);//json編碼 
+    }
+
+
+
+    function weekWeather(){
+        $locationName = $_GET['locationName'];
+        $link = include 'config.php';
+        $arr = array();
+        $today = date("Y/m/d");
+        $tomorrow = date('Y/m/d',strtotime('+7 day'));
+        $news = <<<multi
+        select * from weather where (DATE_FORMAT(startDatetime, "%Y/%m/%d") between '$today' and '$tomorrow') and locationName = '$locationName';
+        multi;
+        $result = mysqli_query($link, $news);
+        while ($row = $result->fetch_assoc()) {
+            array_push($arr, $row);
+        }
+        echo json_encode($arr,JSON_UNESCAPED_UNICODE);//json編碼 
     }
 }
