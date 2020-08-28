@@ -1,45 +1,49 @@
 <?php
 require_once("config.php");
 
-class WeatherController extends Controller {
-    
-    function index() {
+class WeatherController extends Controller
+{
+
+    function index()
+    {
         $this->view("Weather/index");
     }
-    
+
 
     // 伺服器每隔６００秒更新一次資料庫
-    function timer() {
-        ignore_user_abort();//關閉瀏覽器後，繼續執行php程式碼
-        set_time_limit(0);//程式執行時間無限制
-        $sleep_time = 300;//多長時間執行一次
+    function timer()
+    {
+        ignore_user_abort(); //關閉瀏覽器後，繼續執行php程式碼
+        set_time_limit(0); //程式執行時間無限制
+        $sleep_time = 300; //多長時間執行一次
         $switch = 1;
-        while($switch){
+        while ($switch) {
             $switch = 1;
-            $msg=date("Y-m-d H:i:s").$switch;
-            file_put_contents("log.log",$this->weatherData(),FILE_APPEND);//記錄日誌
+            $msg = date("Y-m-d H:i:s") . $switch;
+            file_put_contents("log.log", $this->weatherData(), FILE_APPEND); //記錄日誌
             $this->weatherData();
             $this->rainfallNow();
             $this->rainfall24hr();
-            sleep($sleep_time);//等待時間，進行下一次操作。
+            sleep($sleep_time); //等待時間，進行下一次操作。
         }
         exit();
     }
 
 
     // 天氣預報
-    function weatherData(){
+    function weatherData()
+    {
         // 取得未來一週天氣預報
         $data = json_decode(file_get_contents("https://opendata.cwb.gov.tw/api/v1/rest/datastore/F-D0047-091?Authorization=CWB-50C0F9C6-79D6-4B30-B960-24D1B2964BAC&format=JSON"), true);
         // 資料庫連線參數
         $link = include 'config.php';
         $i = count($data['records']['locations'][0]['location']);
         // 儲存各縣市天氣預報相關資料
-        foreach($data['records']['locations'][0]['location'] as $value ){
+        foreach ($data['records']['locations'][0]['location'] as $value) {
             $locationName = $value['locationName'];
             $lat = $value['lat'];
             $lon = $value['lon'];
-            for($j=0; $j<14; $j++){
+            for ($j = 0; $j < 14; $j++) {
                 $startDatetime;
                 $endDatetime;
                 $pop;
@@ -57,127 +61,98 @@ class WeatherController extends Controller {
                 $MaxT;
                 $WD;
                 $Td;
-                foreach($value['weatherElement'] as $weatherElement){
+                foreach ($value['weatherElement'] as $weatherElement) {
                     // var_dump($weatherElement['time'][$j]['elementValue'][0]['value']);
                     $startDatetime = $weatherElement['time'][$j]['startTime'];
                     $endDatetime = $weatherElement['time'][$j]['endTime'];
-                    if($weatherElement['description']=="12小時降雨機率"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    if ($weatherElement['description'] == "12小時降雨機率") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $pop = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $pop = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="平均溫度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "平均溫度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $t = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $t = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="平均相對濕度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "平均相對濕度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $RH = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $RH = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最小舒適度指數"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最小舒適度指數") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $MinCI = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $MinCI = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最大風速"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最大風速") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $WS = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $WS = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最高體感溫度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最高體感溫度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $MaxAT = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $MaxAT = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="天氣現象"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "天氣現象") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $Wx = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $Wx = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最大舒適度指數"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最大舒適度指數") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $MaxCI = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $MaxCI = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最低溫度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最低溫度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $MinT = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $MinT = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="紫外線指數"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != ""){
+                    } elseif ($weatherElement['description'] == "紫外線指數") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != "") {
                             $UVI = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $UVI = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="天氣預報綜合描述"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "天氣預報綜合描述") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $weatherDescription = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $weatherDescription = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最低體感溫度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最低體感溫度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $MinAT = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $MinAT = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="最高溫度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "最高溫度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $MaxT = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $MaxT = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="風向"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "風向") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $WD = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $WD = 'NULL';
                         }
-                    }
-                    elseif($weatherElement['description']=="平均露點溫度"){
-                        if($weatherElement['time'][$j]['elementValue'][0]['value'] != " "){
+                    } elseif ($weatherElement['description'] == "平均露點溫度") {
+                        if ($weatherElement['time'][$j]['elementValue'][0]['value'] != " ") {
                             $Td = $weatherElement['time'][$j]['elementValue'][0]['value'];
-                        }
-                        else{
+                        } else {
                             $Td = 'NULL';
                         }
                     }
@@ -188,7 +163,7 @@ class WeatherController extends Controller {
                 $result = mysqli_query($link, $sql);
                 $search = mysqli_fetch_assoc($result);
                 //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
-                if($search == NULL){
+                if ($search == NULL) {
                     $sql = <<<mutil
                     INSERT  into weather(
                         locationName, lat, lon, startDatetime,
@@ -201,8 +176,7 @@ class WeatherController extends Controller {
                     $MinAT, $MaxT, "$WD", $Td);
                     mutil;
                     mysqli_query($link, $sql);
-                }
-                else{
+                } else {
                     $sql = <<<mutil
                     update weather
                     set
@@ -233,18 +207,18 @@ class WeatherController extends Controller {
                 }
             }
         }
-        
         return ("已更新囉\n");
     }
 
 
     // 過去一小時累計雨量
-    function rainfallNow(){
+    function rainfallNow()
+    {
         // 資料庫連線參數
         $link = include 'config.php';
         // 取得過去一小時雨量資料
         $data = json_decode(file_get_contents('https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization=CWB-50C0F9C6-79D6-4B30-B960-24D1B2964BAC&elementName=NOW&parameterName=ATTRIBUTE'));
-        foreach($data->records->location as $value){
+        foreach ($data->records->location as $value) {
             $lat = $value->lat;
             $lon = $value->lon;
             $locationName = $value->locationName;
@@ -256,7 +230,7 @@ class WeatherController extends Controller {
             $result = mysqli_query($link, $sql);
             $search = mysqli_fetch_assoc($result);
             //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
-            if($search == NULL){
+            if ($search == NULL) {
                 $sql = <<<mutil
                 insert into rainfallNow(
                     lat, lon, locationName,
@@ -266,8 +240,7 @@ class WeatherController extends Controller {
                 );
                 mutil;
                 mysqli_query($link, $sql);
-            }
-            else{
+            } else {
                 $sql = <<<mutil
                     update rainfallNow
                     set
@@ -284,10 +257,11 @@ class WeatherController extends Controller {
 
 
     // 過去二十四小時累計雨量
-    function rainfall24hr(){
+    function rainfall24hr()
+    {
         $link = include 'config.php';
         $data = json_decode(file_get_contents('https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization=CWB-50C0F9C6-79D6-4B30-B960-24D1B2964BAC&elementName=HOUR_24&parameterName=ATTRIBUTE'));
-        foreach($data->records->location as $value){
+        foreach ($data->records->location as $value) {
             $lat = $value->lat;
             $lon = $value->lon;
             $locationName = $value->locationName;
@@ -299,7 +273,7 @@ class WeatherController extends Controller {
             $result = mysqli_query($link, $sql);
             $search = mysqli_fetch_assoc($result);
             //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
-            if($search == NULL){
+            if ($search == NULL) {
                 $sql = <<<mutil
                 insert into rainfallNow(
                     lat, lon, locationName,
@@ -309,8 +283,7 @@ class WeatherController extends Controller {
                 );
                 mutil;
                 mysqli_query($link, $sql);
-            }
-            else{
+            } else {
                 $sql = <<<mutil
                     update rainfall24hr
                     set
@@ -327,8 +300,18 @@ class WeatherController extends Controller {
 
 
 
-    function todayWeather(){
-        $this->view("Weather/todayWeather");
+    function todayWeather()
+    {
+        $link = include 'config.php';
+        $arr = array();
+        $news = <<<multi
+        select * from weather where (startDatetime > '2020-08-28 00:00:00' AND startDatetime < '2020-08-28 24:00:00');
+        multi;
+        $result = mysqli_query($link, $news);
+        $row = mysqli_fetch_assoc($result);
+        while ($row = $result->fetch_assoc()) {
+            array_push($arr, $row);
+        }
+        echo json_encode($arr,JSON_UNESCAPED_UNICODE);
     }
-    
 }

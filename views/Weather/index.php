@@ -702,13 +702,17 @@
     $("#stationCounty").on("change", function() {
       $this = $(this);
       // 獲取未來３６小時天氣預報
-      $.ajax({
-        type:"GET",
-        url:"todayWeather.php"
-      })
-      .done(function (data) {
-        console.log(data); 
-      })
+      // $.ajax({
+      //   type:"GET",
+      //   url:"todayWeather.php"
+      // })
+      // .done(function (data) {
+      //   console.log(data); 
+      // })
+      $.get('http://localhost:8888/RD1_Assignment/weather/todayWeather', aaa);
+      function aaa(data){
+        console.log(data);
+      }
 
 
     })
