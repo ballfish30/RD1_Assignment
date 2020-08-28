@@ -274,6 +274,7 @@ class WeatherController extends Controller
             $search = mysqli_fetch_assoc($result);
             //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
             if ($search == NULL) {
+                echo(2);
                 $sql = <<<mutil
                 insert into rainfall24hr(
                     lat, lon, locationName,
@@ -282,9 +283,9 @@ class WeatherController extends Controller
                     $lat, $lon, "$locationName", "$stationId", $elementValue
                 );
                 mutil;
-                echo($sql);
                 mysqli_query($link, $sql);
             } else {
+                echo(1);
                 $sql = <<<mutil
                     update rainfall24hr
                     set
@@ -294,7 +295,6 @@ class WeatherController extends Controller
                     where
                         stationId = '$stationId';
                     mutil;
-                echo($sql);
                 mysqli_query($link, $sql);
             }
         }
