@@ -16,7 +16,7 @@
 <body>
 <div>
   選擇縣市：
-  <select name="stationCounty" id="stationCounty" style="width: 220px;">
+  <select id="stationCounty" style="width: 220px;">
     <option value="">----------</option>
     <option value="臺北市">臺北市 (TaipeiCity)</option>
     <option value="新北市">新北市 (NewTaipeiCity)</option>
@@ -49,6 +49,8 @@
 <div id="weatherNow"></div>
 <div id="weather2"></div>
 <div id="weatherWeek"></div>
+<div id="rainfallNow"></div>
+<div id="rainfall24hr"></div>
 </body>
 <script>
   $(document).ready(function() {
@@ -711,10 +713,10 @@
 
     $("#stationCounty").on("change", function() {
       $this = $(this);
-      $select = '選擇觀測站：<select name="stationCounty" id="stationCounty" style="width: 220px;">';
+      $select = '選擇觀測站：<select id="observatory" style="width: 220px;">';
       $option = '';
       for(i in location[$this.val()]){
-        $option += '<option value='+ location[i] +'>'+ i +'</option>'
+        $option += '<option value='+ location[$this.val()][i] +'>'+ i +'</option>'
       }
       $select += $option;
       $select += '</select>';
@@ -754,7 +756,7 @@
                   </tr>\
                     '+$weather+'\
                 </table>'
-        $('#weather2').html("未來2天天氣預報：：<br>"+$html)
+        $('#weather2').html("未來2天天氣預報：<br>"+$html)
       })
 
       // 抓取未來一週天氣預報
@@ -774,9 +776,47 @@
                   </tr>\
                     '+$weather+'\
                 </table>'
-        $('#weatherWeek').html("未來一週天氣預報：：<br>"+$html)
+        $('#weatherWeek').html("未來一週天氣預報：<br>"+$html)
       })
+      observatoryLoading()
     })
+    function observatoryLoading(){
+      $("#observatory").on("change", function() {
+        $this = $(this);
+        $.ajax({
+          type:"GET",
+          url:"http://localhost:8888/RD1_Assignment/weather/rainfallNow?stationID="+$this.val()
+        })
+        .done(function (data) {
+          $data = JSON.parse(data);
+          $html = '<table>\
+                    <tr>\
+                      <th>觀測站</th><th>代號</th><th>每小時降雨量</th>\
+                    </tr>\
+                      <td>'+$data[0]['locationName']+'</td>\
+                      <td>'+$data[0]['stationId']+'</td>\
+                      <td>'+$data[0]['elementValue']+'</td>\
+                  </table>'
+          $('#rainfallNow').html("每小時降雨量：<br>"+$html)
+        })
+        $.ajax({
+          type:"GET",
+          url:"http://localhost:8888/RD1_Assignment/weather/rainfall24hr?stationID="+$this.val()
+        })
+        .done(function (data) {
+          $data = JSON.parse(data);
+          $html = '<table>\
+                    <tr>\
+                      <th>觀測站</th><th>代號</th><th>24小時降雨量</th>\
+                    </tr>\
+                      <td>'+$data[0]['locationName']+'</td>\
+                      <td>'+$data[0]['stationId']+'</td>\
+                      <td>'+$data[0]['elementValue']+'</td>\
+                  </table>'
+          $('#rainfall24hr').html("24小時降雨量：<br>"+$html)
+        })
+      })
+    }
   });
 </script>
 </html>

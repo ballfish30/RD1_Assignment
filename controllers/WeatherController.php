@@ -22,8 +22,8 @@ class WeatherController extends Controller
             $msg = date("Y-m-d H:i:s") . $switch;
             file_put_contents("log.log", $this->weatherData(), FILE_APPEND); //記錄日誌
             $this->weatherData();
-            $this->rainfallNow();
-            $this->rainfall24hr();
+            $this->rainfallNowData();
+            $this->rainfall24hrData();
             sleep($sleep_time); //等待時間，進行下一次操作。
         }
         exit();
@@ -212,7 +212,7 @@ class WeatherController extends Controller
 
 
     // 過去一小時累計雨量
-    function rainfallNow()
+    function rainfallNowData()
     {
         // 資料庫連線參數
         $link = include 'config.php';
@@ -257,7 +257,7 @@ class WeatherController extends Controller
 
 
     // 過去二十四小時累計雨量
-    function rainfall24hr()
+    function rainfall24hrData()
     {
         $link = include 'config.php';
         $data = json_decode(file_get_contents('https://opendata.cwb.gov.tw/api/v1/rest/datastore/O-A0002-001?Authorization=CWB-50C0F9C6-79D6-4B30-B960-24D1B2964BAC&elementName=HOUR_24&parameterName=ATTRIBUTE'));
@@ -274,7 +274,6 @@ class WeatherController extends Controller
             $search = mysqli_fetch_assoc($result);
             //判斷是否查詢到該筆資料，如有將進行更新資料或新增資料
             if ($search == NULL) {
-                echo(2);
                 $sql = <<<mutil
                 insert into rainfall24hr(
                     lat, lon, locationName,
@@ -360,5 +359,36 @@ class WeatherController extends Controller
             array_push($arr, $row);
         }
         echo json_encode($arr,JSON_UNESCAPED_UNICODE);//json編碼 
+    }
+
+
+    function rainfallNow(){
+        $stationID = $_GET['stationID'];
+        $link = include 'config.php';
+        $arr = array();
+        $news = <<<multi
+        select * from rainfallNow where stationID = '$stationID';
+        multi;
+        $result = mysqli_query($link, $news);
+        while ($row = $result->fetch_assoc()) {
+            array_push($arr, $row);
+        }
+        echo json_encode($arr,JSON_UNESCAPED_UNICODE);//json編碼
+    }
+
+
+
+    function rainfall24hr(){
+        $stationID = $_GET['stationID'];
+        $link = include 'config.php';
+        $arr = array();
+        $news = <<<multi
+        select * from rainfall24hr where stationID = '$stationID';
+        multi;
+        $result = mysqli_query($link, $news);
+        while ($row = $result->fetch_assoc()) {
+            array_push($arr, $row);
+        }
+        echo json_encode($arr,JSON_UNESCAPED_UNICODE);//json編碼
     }
 }
