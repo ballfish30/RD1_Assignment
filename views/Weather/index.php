@@ -779,6 +779,7 @@
         $('#weatherWeek').html("未來一週天氣預報：<br>"+$html)
       })
       observatoryLoading()
+      $("#observatory").change();
     })
     function observatoryLoading(){
       $("#observatory").on("change", function() {
