@@ -249,6 +249,7 @@ class WeatherController extends Controller
                     where
                         stationId = '$stationId';
                     mutil;
+                mysqli_query($link, $sql);
             }
         }
     }
@@ -310,11 +311,11 @@ class WeatherController extends Controller
         $datetime = date("Y-m-d H:i:s", mktime(date('H') + 8, date('i'), date('s'), date('m'), date('d'), date('Y')));
         if ($datetime >= date("Y-m-d H:i:s", mktime(6, 00, 00, date('m'), date('d'), date('Y'))) and $datetime < date("Y-m-d H:i:s", mktime(18, 00, 00, date('m'), date('d'), date('Y')))) {
             $news = <<<multi
-            select * from weather where (startDatetime = '$startTime') and locationName = '$locationName';
+            select * from weather where (startDatetime = '$startTime') and locationName = '$locationName'  order by startDatetime;
             multi;
         }else{
             $news = <<<multi
-            select * from weather where (startDatetime = '$endTime') and locationName = '$locationName';
+            select * from weather where (startDatetime = '$endTime') and locationName = '$locationName'  order by startDatetime;
             multi;
         }
         $result = mysqli_query($link, $news);
@@ -333,7 +334,7 @@ class WeatherController extends Controller
         $today = date("Y/m/d");
         $tomorrow = date('Y/m/d',strtotime('+2 day'));
         $news = <<<multi
-        select * from weather where (DATE_FORMAT(startDatetime, "%Y/%m/%d") between '$today' and '$tomorrow') and locationName = '$locationName';
+        select * from weather where (DATE_FORMAT(startDatetime, "%Y/%m/%d") between '$today' and '$tomorrow') and locationName = '$locationName' order by startDatetime;
         multi;
         $result = mysqli_query($link, $news);
         while ($row = $result->fetch_assoc()) {
@@ -351,7 +352,7 @@ class WeatherController extends Controller
         $today = date("Y/m/d");
         $tomorrow = date('Y/m/d',strtotime('+7 day'));
         $news = <<<multi
-        select * from weather where (DATE_FORMAT(startDatetime, "%Y/%m/%d") between '$today' and '$tomorrow') and locationName = '$locationName';
+        select * from weather where (DATE_FORMAT(startDatetime, "%Y/%m/%d") between '$today' and '$tomorrow') and locationName = '$locationName' order by startDatetime;
         multi;
         $result = mysqli_query($link, $news);
         while ($row = $result->fetch_assoc()) {

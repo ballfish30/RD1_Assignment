@@ -695,13 +695,11 @@
       '金門縣': {
         '金門 (KINMEN)': '467110',
         '金沙 (Jinsha)': 'C0W140',
-        '金寧 (Jinning)': 'C0W150',
-        '烏坵 (Wuqiu)': 'C0W160'
+        '金寧 (Jinning)': 'C0W150'
       },
       '連江縣': {
         '馬祖 (MATSU)': '467990',
-        '東莒 (Dongju)': 'C0W110',
-        '東引 (Dongyin)': ''
+        '東莒 (Dongju)': 'C0W110'
       },
       '澎湖縣': {
         '東吉島 (DONGJIDAO)': '467300',
@@ -768,11 +766,11 @@
         $data = JSON.parse(data);
         $weather = '';
         for(weather of $data){
-          $weather += '<tr><td>'+weather['locationName']+'</td><td>'+weather['pop']+'％</td><td>'+weather['MinT']+'度-'+weather['MaxT']+'度</td><td>'+weather['weatherDescription']+'</td></tr>'
+          $weather += '<tr><td>'+weather['locationName']+'</td><td>'+weather['startDatetime']+'-'+weather['endDatetime']+'</td><td>'+weather['pop']+'％</td><td>'+weather['MinT']+'度-'+weather['MaxT']+'度</td><td>'+weather['weatherDescription']+'</td></tr>'
         }
         $html = '<table>\
                   <tr>\
-                    <th>縣市</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
+                    <th>縣市</th><th>日期</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
                   </tr>\
                     '+$weather+'\
                 </table>'
