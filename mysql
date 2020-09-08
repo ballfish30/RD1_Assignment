@@ -1,0 +1,150 @@
+-- phpMyAdmin SQL Dump
+-- version 4.9.3
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:8889
+-- Generation Time: Sep 08, 2020 at 09:09 AM
+-- Server version: 5.7.26-log
+-- PHP Version: 7.4.2
+
+create database weather default character set utf8;
+use weather;
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `weather`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rainfall`
+--
+drop table if exists rainfall;
+CREATE TABLE `rainfall` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `lat` float DEFAULT NULL,
+  `lon` float DEFAULT NULL,
+  `locationName` varchar(30) DEFAULT NULL,
+  `stationID` varchar(30) DEFAULT NULL,
+  `elementValue` float DEFAULT NULL,
+  `element24hrValue` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rainfall24hr`
+--
+drop table if exists rainfall24hr;
+CREATE TABLE `rainfall24hr` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `lat` float DEFAULT NULL,
+  `lon` float DEFAULT NULL,
+  `locationName` varchar(30) DEFAULT NULL,
+  `stationId` varchar(30) DEFAULT NULL,
+  `elementValue` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rainfallNow`
+--
+drop table if exists rainfallNow;
+CREATE TABLE `rainfallNow` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `lat` float DEFAULT NULL,
+  `lon` float DEFAULT NULL,
+  `locationName` varchar(30) DEFAULT NULL,
+  `stationId` varchar(30) DEFAULT NULL,
+  `elementValue` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `weather`
+--
+drop table if exists weather;
+CREATE TABLE `weather` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `locationName` varchar(30) DEFAULT NULL,
+  `lat` float DEFAULT NULL,
+  `lon` float DEFAULT NULL,
+  `startDatetime` datetime DEFAULT NULL,
+  `endDatetime` datetime DEFAULT NULL,
+  `pop` int(3) DEFAULT NULL,
+  `t` int(3) DEFAULT NULL,
+  `RH` int(3) DEFAULT NULL,
+  `MinCI` int(3) DEFAULT NULL,
+  `WS` int(3) DEFAULT NULL,
+  `MaxAT` int(3) DEFAULT NULL,
+  `Wx` varchar(30) DEFAULT NULL,
+  `MaxCI` int(3) DEFAULT NULL,
+  `MinT` int(3) DEFAULT NULL,
+  `UVI` int(3) DEFAULT NULL,
+  `weatherDescription` varchar(150) DEFAULT NULL,
+  `MinAT` int(3) DEFAULT NULL,
+  `MaxT` int(3) DEFAULT NULL,
+  `WD` varchar(30) DEFAULT NULL,
+  `Td` int(3) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `rainfall`
+--
+ALTER TABLE `rainfall`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `rainfall24hr`
+--
+ALTER TABLE `rainfall24hr`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `rainfallNow`
+--
+ALTER TABLE `rainfallNow`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `weather`
+--
+ALTER TABLE `weather`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `rainfall`
+--
+ALTER TABLE `rainfall`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `rainfall24hr`
+--
+ALTER TABLE `rainfall24hr`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `rainfallNow`
+--
+ALTER TABLE `rainfallNow`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `weather`
+--
+ALTER TABLE `weather`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
