@@ -14,6 +14,9 @@
 </head>
 
 <body>
+<div class="c-zt-pic">
+  <img id="preview" src="" style='width:100%; height:100%'>
+</div>
 <div>
   選擇縣市：
   <select id="stationCounty" style="width: 220px;">
@@ -56,6 +59,75 @@
   $(document).ready(function() {
     var dt = new Date();
     var $weatherNow = weatherNow.innerHTML;
+
+    var imgs = {
+      '基隆市':[
+        '../img/基隆市/12_0001105_1.jpg', '../img/基隆市/12_0001105.jpg', '../img/基隆市/20_0001105.jpg'
+      ],
+      '臺北市':[
+        '../img/臺北市/12_0001090_1.jpg', '../img/臺北市/20_0001090.jpg', '../img/臺北市/20_0001090_1.jpg'
+      ],
+      '新北市':[
+        '../img/新北市/12_0001091_3.jpg', '../img/新北市/20_0001091.jpg', '../img/新北市/20_0001091_1.jpg'
+      ],
+      '宜蘭縣':[
+        '../img/宜蘭縣/12_0001106_1.jpg', '../img/宜蘭縣/20_0001106.jpg'
+      ],
+      '新竹市':[
+        '../img/新竹市/20_0001109.jpg'
+      ],
+      '新竹縣':[
+        '../img/新竹縣/20_0001108.jpg'
+      ],
+      '桃園市':[
+        '../img/桃園市/12_0001107_2.jpg', '../img/桃園市/20_0001107.jpg', '../img/桃園市/20_0001107_1.jpg'
+      ],
+      '苗栗縣':[
+        '../img/苗栗縣/12_0001110.jpg', '../img/苗栗縣/12_0001110_1.jpg', '../img/苗栗縣/20_0001110.jpg'
+      ],
+      '臺中市':[
+        '../img/臺中市/12_0001112_1.jpg', '../img/臺中市/20_0001112.jpg', '../img/臺中市/20_0001112_1.jpg'
+      ],
+      '彰化縣':[
+        '../img/彰化縣/12_0001113_1.jpg', '../img/彰化縣/20_0001113.jpg'
+      ],
+      '南投縣':[
+        '../img/南投縣/12_0001114.jpg', '../img/南投縣/12_0001114_1.jpg', '../img/南投縣/20_0001114.jpg'
+      ],
+      '嘉義市':[
+        '../img/嘉義市/12_0001117.jpg', '../img/嘉義市/20_0001117.jpg'
+      ],
+      '嘉義縣':[
+        '../img/嘉義縣/12_0001116_1.jpg', '../img/嘉義縣/12_0001116_2.jpg', '../img/嘉義縣/20_0001116.jpg'
+      ],
+      '雲林縣':[
+        '../img/雲林縣/12_0001115.jpg', '../img/雲林縣/12_0001115_1.jpg', '../img/雲林縣/12_0001115_2.jpg'
+      ],
+      '臺南市':[
+        '../img/臺南市/12_0001119_1.jpg', '../img/臺南市/20_0001119_1.jpg', '../img/臺南市/20_0001119_2.jpg'
+      ],
+      '高雄市':[
+        '../img/高雄市/12_0001121.jpg', '../img/高雄市/12_0001121_1.jpg', '../img/高雄市/20_0001121.jpg', '../img/高雄市/20_0001121_1.jpg'
+      ],
+      '屏東縣':[
+        '../img/屏東縣/12_0001122.jpg', '../img/屏東縣/12_0001122_1.jpg', '../img/屏東縣/20_0001122.jpg'
+      ],
+      '臺東縣':[
+        '../img/臺東縣/12_0001123_1.jpg', '../img/臺東縣/12_0001123_2.jpg', '../img/臺東縣/12_0001123_3.jpg'
+      ],
+      '花蓮縣':[
+        '../img/花蓮縣/12_0001124_4.jpg', '../img/花蓮縣/20_0001124_3.jpg', '../img/花蓮縣/20_0001124_5.jpg'
+      ],
+      '金門縣':[
+        '../img/金門縣/20_0001126.jpg'
+      ],
+      '連江縣':[
+        '../img/連江縣/12_0001127.jpg', '../img/連江縣/12_0001127_1.jpg', '../img/連江縣/20_0001127.jpg'
+      ],
+      '澎湖縣':[
+        '../img/澎湖縣/12_0001125.jpg', '../img/澎湖縣/12_0001125_1.jpg', '../img/澎湖縣/20_0001125.jpg', '../img/澎湖縣/20_0001125_1.jpg'
+      ]
+    };
 
     var location = {
       '基隆市': {
@@ -713,6 +785,12 @@
       $this = $(this);
       $select = '選擇觀測站：<select id="observatory" style="width: 220px;">';
       $option = '';
+      
+      max = imgs[$this.val()].length - 1;
+      random = Math.floor(Math.random() * (max - 0 + 1)) + 0;
+      path = imgs[$this.val()][random];
+      document.getElementById('preview').src = path;
+
       for(i in location[$this.val()]){
         $option += '<option value='+ location[$this.val()][i] +'>'+ i +'</option>'
       }
@@ -728,10 +806,10 @@
         $data = JSON.parse(data);
         $html = '<table>\
                   <tr>\
-                    <th>縣市</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
+                    <th>縣市</th><th>日期</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
                   </tr>\
                   <tr>\
-                    <td>'+$data[0]['locationName']+'</td><td>'+$data[0]['pop']+'％</td><td>'+$data[0]['MinT']+'度-'+$data[0]['MaxT']+'度</td><td>'+$data[0]['weatherDescription']+'</td>\
+                    <td>'+$data[0]['locationName']+'</td><td>'+$data[0]['startDatetime']+'-'+$data[0]['endDatetime']+'</td><td>'+$data[0]['pop']+'％</td><td>'+$data[0]['MinT']+'度-'+$data[0]['MaxT']+'度</td><td>'+$data[0]['weatherDescription']+'</td>\
                   </tr>\
                 </table>'
         $('#weatherNow').html("目前天氣：<br>"+$html)
@@ -746,11 +824,11 @@
         $data = JSON.parse(data);
         $weather = '';
         for(weather of $data){
-          $weather += '<tr><td>'+weather['locationName']+'</td><td>'+weather['pop']+'％</td><td>'+weather['MinT']+'度-'+weather['MaxT']+'度</td><td>'+weather['weatherDescription']+'</td></tr>'
+          $weather += '<tr><td>'+weather['locationName']+'</td><td>'+weather['startDatetime']+'-'+weather['endDatetime']+'</td><td>'+weather['pop']+'％</td><td>'+weather['MinT']+'度-'+weather['MaxT']+'度</td><td>'+weather['weatherDescription']+'</td></tr>'
         }
         $html = '<table>\
                   <tr>\
-                    <th>縣市</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
+                    <th>縣市</th><th>日期</th><th>降雨機率</th><th>溫度</th><th>詳細內容</th>\
                   </tr>\
                     '+$weather+'\
                 </table>'
