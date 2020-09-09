@@ -44,13 +44,12 @@
     <option value="連江縣">連江縣 (LienchiangCounty)</option>
   </select>
 </div>
-<br>
-<div id="location">
-</div>
-<br>
 <div id="weatherNow"></div>
 <div id="weather2"></div>
 <div id="weatherWeek"></div>
+<br>
+<div id="location"></div>
+<br>
 <div id="rainfallNow"></div>
 <div id="rainfall24hr"></div>
 </body>
@@ -781,7 +780,6 @@
     };
 
     $("#stationCounty").on("change", function() {
-      console.log(123);
       $this = $(this);
       $select = '選擇觀測站：<select id="observatory" style="width: 220px;">';
       $option = '';
