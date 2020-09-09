@@ -20,7 +20,6 @@
 <div>
   選擇縣市：
   <select id="stationCounty" style="width: 220px;">
-    <option value="">----------</option>
     <option value="臺北市">臺北市 (TaipeiCity)</option>
     <option value="新北市">新北市 (NewTaipeiCity)</option>
     <option value="臺中市">臺中市 (TaichungCity)</option>
@@ -782,6 +781,7 @@
     };
 
     $("#stationCounty").on("change", function() {
+      console.log(123);
       $this = $(this);
       $select = '選擇觀測站：<select id="observatory" style="width: 220px;">';
       $option = '';
@@ -894,6 +894,7 @@
         })
       })
     }
+    $("#stationCounty").change();
   });
 </script>
 </html>
